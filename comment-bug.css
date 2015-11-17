@@ -1,0 +1,27 @@
+/* CSS declarations go here */
+.container{
+	max-width: 960px;
+	margin: auto;
+	font-family: sans-serif;
+}
+.col{
+	float: left;
+	width: 450px;
+	margin-left: 60px;
+}
+.col:first-child{
+	margin: 0;
+}
+.col + h3{
+	clear: both
+}
+table{
+	padding: 5px;
+	border-collapse: collapse;
+	width: 720px;
+	margin: 20px auto;
+}
+
+table, tr, td, th{
+		border: 1px solid black;
+}

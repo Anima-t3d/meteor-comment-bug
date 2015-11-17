@@ -1,0 +1,116 @@
+<head>
+	<title>Example</title>
+</head>
+
+<body>
+<div class="container">
+	<h1>Welcome to Meteor bug reproduction!</h1>
+	<h2>Only happening in template inclusion</h2>
+	<p>A HTML comment containing an opening tag of a HTML element that is not allowed in the HTML structure will trigger sanitizing</p>
+	<div>
+		<div class="col">
+			<h3>Expected</h3>
+			<p>HTML code to be rendered as intended, not taking into account comments</p>
+		</div>
+		<div class="col">
+			<h3>Result</h3>
+			<p>HTML code is stripped of invalid characters based on HTML code in HTML comments</p>
+			<p>Only happens when HTML comment precedes wanted HTML content AND it contains an opening HTML tag which would break HTML validation when rendered</p>
+		</div>
+	</div>
+	<h3>Conclusion</h3>
+	<p>HTML comments containing opening elements will be attempted to be rendered. After rendering it will trigger sanitizing filters after which certain elements get removed.</p>
+
+	<h2>Examples</h2>
+	{{> example}}
+</div>
+</body>
+
+<template name="example">
+	<h3>Bugged</h3>
+	<table>
+		<caption>Bugged</caption>
+		<thead>
+			<tr>
+				<th>col 1</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#each array}}
+				{{> ReproRow}}
+			{{/each}}
+		</tbody>
+	</table>
+
+	<table>
+		<caption>Bugged2</caption>
+		<thead>
+			<tr>
+				<th>col 1</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#each array}}
+				{{> ReproRow2}}
+			{{/each}}
+		</tbody>
+	</table>
+
+	<h3>Expected</h3>
+	<table>
+		<caption>OK with comment</caption>
+		<thead>
+			<tr>
+				<th>col 1</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#each array}}
+				{{> RowOK}}
+			{{/each}}
+		</tbody>
+	</table>
+
+	<table>
+		<caption>OK not using sub templates</caption>
+		<thead>
+			<tr>
+				<th>col 1</th>
+			</tr>
+		</thead>
+		<tbody>
+			{{#each array}}
+				<!--Will render tr and td due to comment before code-->
+				<!-- <p> -->
+				<tr>
+					<td><strong>test</strong></td>
+				</tr>
+			{{/each}}
+		</tbody>
+	</table>
+
+</template>
+
+<template name="ReproRow">
+<!--Will not render tr and td due to comment before code-->
+	<!-- <p> -->
+	<tr>
+		<td><strong>Does not render tr and td</strong></td>
+	</tr>
+</template>
+
+<template name="ReproRow2">
+	<!--Will render tr and td BUT ALSO tbody due to comment before code containing <tbody> -->
+	<!-- <tbody> -->
+	<tr>
+		<td><strong>Also renders tbody</strong></td>
+	</tr>
+</template>
+
+<template name="RowOK">
+	<tr>
+		<td><strong>test OK</strong></td>
+	</tr>
+<!--Will render tr and td due to comment after code-->
+	<!-- <p> -->
+</template>
